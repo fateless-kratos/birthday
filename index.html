@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday! 🎉</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .fancy-font {
+            font-family: 'Pacifico', cursive;
+        }
+        
+        /* Envelope Styles */
+        .envelope {
+            position: relative;
+            width: 280px;
+            height: 180px;
+            transition: transform 0.6s ease;
+        }
+        
+        .envelope:hover {
+            transform: scale(1.05);
+        }
+        
+        .envelope-body {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FFE5E5 0%, #FFB6C1 100%);
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(255, 182, 193, 0.4);
+        }
+        
+        .envelope-flap {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-bottom: 90px solid #FF69B4;
+            top: 0;
+            left: 0;
+            transform-origin: top;
+            transition: transform 0.6s ease;
+            z-index: 2;
+        }
+        
+        .envelope.opening .envelope-flap {
+            transform: rotateX(180deg);
+        }
+        
+        .envelope-heart {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+        
+        /* Glowing Button Animation */
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.8),
+                            0 0 40px rgba(255, 215, 0, 0.6),
+                            0 0 60px rgba(255, 215, 0, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(255, 215, 0, 1),
+                            0 0 60px rgba(255, 215, 0, 0.8),
+                            0 0 90px rgba(255, 215, 0, 0.6);
+            }
+        }
+        
+        .glow-button {
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        /* Confetti Background */
+        .confetti-bg {
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 60% 80%, rgba(255, 182, 193, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(135, 206, 250, 0.3) 0%, transparent 50%);
+        }
+        
+        /* Slide Animations */
+        .slide-enter {
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Card Hover Effect */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Password Input Styling */
+        .password-input {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .password-input:focus {
+            border-color: #FF69B4;
+            outline: none;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+        }
+        
+        .error-shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        /* Hide scrollbar but keep functionality */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50 min-h-screen">
+    
+    <!-- Screen 0: Envelope Lock -->
+    <div id="envelope-screen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl fancy-font text-pink-600 mb-8 animate-bounce">
+                You've Got Mail! 💌
+            </h1>
+            <div class="envelope cursor-pointer" id="envelope" onclick="showPasswordModal()">
+                <div class="envelope-body"></div>
+                <div class="envelope-flap"></div>
+                <div class="envelope-heart">💖</div>
+            </div>
+            <p class="mt-8 text-gray-600 text-lg">Click the envelope to open your surprise!</p>
+        </div>
+    </div>
+    
+    <!-- Password Modal -->
+    <div id="password-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl transform transition-all">
+            <h2 class="text-2xl md:text-3xl fancy-font text-pink-600 mb-4 text-center">Enter the Secret Code</h2>
+            <p class="text-gray-600 mb-6 text-center">Hint: A special date (DDMMYYYY) 🎂</p>
+            <input 
+                type="text" 
+                id="password-input" 
+                class="password-input w-full px-4 py-3 rounded-lg text-center text-xl tracking-widest"
+                placeholder="••••••••"
+                maxlength="8"
+                onkeypress="if(event.key === 'Enter') checkPassword()"
+            />
+            <p id="error-message" class="text-red-500 text-sm mt-2 text-center hidden">Oops! Wrong code. Try again! 💭</p>
+            <div class="flex gap-3 mt-6">
+                <button 
+                    onclick="hidePasswordModal()" 
+                    class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all font-semibold"
+                >
+                    Cancel
+                </button>
+                <button 
+                    onclick="checkPassword()" 
+                    class="flex-1 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:from-pink-600 hover:to-purple-600 transition-all font-semibold"
+                >
+                    Unlock 🔓
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content (Hidden Initially) -->
+    <div id="main-content" class="hidden">
+        
+        <!-- Page 1: Welcome -->
+        <div id="page-1" class="min-h-screen flex items-center justify-center p-4 page">
+            <div class="text-center max-w-4xl mx-auto">
+                <h1 class="text-5xl md:text-7xl lg:text-8xl fancy-font text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 mb-8 animate-pulse">
+                    Happy Birthday, Bestie! 🎉
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-700 mb-12">
+                    Get ready for a journey through our amazing memories! 🌟
+                </p>
+                
+                <!-- GIFs -->
+                <div class="flex flex-wrap justify-center gap-6 mb-12">
+                    <img src="gifs/gif1.gif" alt="Celebration" class="rounded-2xl shadow-lg card-hover" onerror="this.src='https://placehold.co/200x200/FFC0CB/000?text=GIF+1'"/>
+                    <img src="gifs/gif2.gif" alt="Party" class="rounded-2xl shadow-lg card-hover" onerror="this.src='https://placehold.co/200x200/87CEEB/000?text=GIF+2'"/>
+                    <img src="gifs/gif3.gif" alt="Surprise" class="rounded-2xl shadow-lg card-hover" onerror="this.src='https://placehold.co/200x200/FFD700/000?text=GIF+3'"/>
+                </div>
+                
+                <button 
+                    onclick="goToPage(2)" 
+                    class="glow-button px-12 py-5 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 text-white text-xl md:text-2xl font-bold rounded-full transform hover:scale-110 transition-all duration-300"
+                >
+                    ✨ Your Surprise Awaits! ✨
+                </button>
+            </div>
+        </div>
+        
+        <!-- Page 2: Photo Message 1 -->
+        <div id="page-2" class="hidden min-h-screen flex items-center justify-center p-4 page">
+            <div class="max-w-3xl w-full">
+                <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 card-hover">
+                    <h2 class="text-3xl md:text-4xl fancy-font text-pink-600 mb-6 text-center">Memory #1 📸</h2>
+                    <img src="photos/photo1.jpg" alt="Memory 1" class="w-full rounded-2xl shadow-lg mb-6" onerror="this.onerror=null; this.src='photos/photo1.png'; this.onerror=function(){this.src='https://placehold.co/400x300/F0F0F0/000?text=Photo+1'}"/>
+                    <div 
+                        id="message-1"
+                        class="text-lg md:text-xl text-gray-700 leading-relaxed p-6 bg-pink-50 rounded-xl min-h-[200px] whitespace-pre-line"
+                    >
+Remember this moment? This is where our journey began! 🌈✨
+
+From that day forward, every moment with you has been filled with laughter, joy, and unforgettable memories. You're not just a friend; you're family! 💕🎉
+
+Your presence in my life has made everything brighter and more meaningful. Thank you for being YOU! 🌟💖
+                    </div>
+                    <button 
+                        onclick="goToPage(3)" 
+                        class="mt-8 w-full px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xl font-semibold rounded-xl hover:from-pink-600 hover:to-purple-600 transition-all transform hover:scale-105"
+                    >
+                        Next Surprise 🎁
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Page 3: Photo Message 2 -->
+        <div id="page-3" class="hidden min-h-screen flex items-center justify-center p-4 page">
+            <div class="max-w-3xl w-full">
+                <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 card-hover">
+                    <h2 class="text-3xl md:text-4xl fancy-font text-blue-600 mb-6 text-center">Memory #2 🌟</h2>
+                    <img src="photos/photo2.jpg" alt="Memory 2" class="w-full rounded-2xl shadow-lg mb-6" onerror="this.onerror=null; this.src='photos/photo2.png'; this.onerror=function(){this.src='https://placehold.co/400x300/F0F0F0/000?text=Photo+2'}"/>
+                    <div 
+                        id="message-2"
+                        class="text-lg md:text-xl text-gray-700 leading-relaxed p-6 bg-blue-50 rounded-xl min-h-[200px] whitespace-pre-line"
+                    >
+This photo captures one of my favorite moments with you! 🎊📸
+
+Your smile lights up every room, and your energy is absolutely contagious. Thank you for being the incredible person you are and for making life so much more fun! 🌺✨
+
+Every adventure with you becomes a cherished memory. Here's to a thousand more! 🎈💫
+                    </div>
+                    <button 
+                        onclick="goToPage(4)" 
+                        class="mt-8 w-full px-8 py-4 bg-gradient-to-r from-blue-500 to-teal-500 text-white text-xl font-semibold rounded-xl hover:from-blue-600 hover:to-teal-600 transition-all transform hover:scale-105"
+                    >
+                        Next Surprise 🎁
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Page 4: Photo Message 3 -->
+        <div id="page-4" class="hidden min-h-screen flex items-center justify-center p-4 page">
+            <div class="max-w-3xl w-full">
+                <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 card-hover">
+                    <h2 class="text-3xl md:text-4xl fancy-font text-purple-600 mb-6 text-center">Memory #3 💜</h2>
+                    <img src="photos/photo3.jpg" alt="Memory 3" class="w-full rounded-2xl shadow-lg mb-6" onerror="this.onerror=null; this.src='photos/photo3.png'; this.onerror=function(){this.src='https://placehold.co/400x300/F0F0F0/000?text=Photo+3'}"/>
+                    <div 
+                        id="message-3"
+                        class="text-lg md:text-xl text-gray-700 leading-relaxed p-6 bg-purple-50 rounded-xl min-h-[200px] whitespace-pre-line"
+                    >
+I'll never forget this day! Pure magic! ✨🎭
+
+Through thick and thin, ups and downs, you've been there. Your friendship is one of the greatest gifts I've ever received, and I cherish every moment we spend together! 🎈💜
+
+You make the ordinary extraordinary, and I'm so grateful for you! 🌟💝
+                    </div>
+                    <button 
+                        onclick="goToPage(5)" 
+                        class="mt-8 w-full px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xl font-semibold rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105"
+                    >
+                        Next Surprise 🎁
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Page 5: Photo Message 4 -->
+        <div id="page-5" class="hidden min-h-screen flex items-center justify-center p-4 page">
+            <div class="max-w-3xl w-full">
+                <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 card-hover">
+                    <h2 class="text-3xl md:text-4xl fancy-font text-teal-600 mb-6 text-center">Memory #4 🌊</h2>
+                    <img src="photos/photo4.jpg" alt="Memory 4" class="w-full rounded-2xl shadow-lg mb-6" onerror="this.onerror=null; this.src='photos/photo4.png'; this.onerror=function(){this.src='https://placehold.co/400x300/F0F0F0/000?text=Photo+4'}"/>
+                    <div 
+                        id="message-4"
+                        class="text-lg md:text-xl text-gray-700 leading-relaxed p-6 bg-teal-50 rounded-xl min-h-[200px] whitespace-pre-line"
+                    >
+What an adventure this was! You make everything better! 🚀🌈
+
+Whether we're laughing until our stomachs hurt or supporting each other through challenges, every moment with you is precious. Here's to many more adventures together! 🎉💫
+
+You're irreplaceable, and I'm blessed to call you my friend! 💖🌟
+                    </div>
+                    <button 
+                        onclick="goToPage(6)" 
+                        class="mt-8 w-full px-8 py-4 bg-gradient-to-r from-teal-500 to-green-500 text-white text-xl font-semibold rounded-xl hover:from-teal-600 hover:to-green-600 transition-all transform hover:scale-105"
+                    >
+                        Final Surprise 🎁✨
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Page 6: Final Heartfelt Message -->
+        <div id="page-6" class="hidden min-h-screen flex items-center justify-center p-4 page confetti-bg">
+            <div class="max-w-4xl w-full">
+                <div class="bg-gradient-to-br from-yellow-50 via-pink-50 to-purple-50 rounded-3xl shadow-2xl p-8 md:p-12 border-4 border-yellow-300">
+                    <div class="text-center mb-8">
+                        <h2 class="text-4xl md:text-6xl fancy-font text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-500 mb-4">
+                            A Letter From My Heart 💝
+                        </h2>
+                        <div class="text-6xl mb-4">🎂✨🎉</div>
+                    </div>
+                    
+                    <div class="max-h-[60vh] overflow-y-auto hide-scrollbar">
+                        <div class="text-lg md:text-xl text-gray-800 leading-relaxed space-y-6">
+                            <p class="text-2xl font-semibold text-pink-600 mb-6">Dear Birthday Star,</p>
+                            
+                            <p>
+                                As you celebrate another year of your amazing life, I want you to know just how incredibly special you are to me. From the moment we became friends, my life has been brighter, fuller, and infinitely more joyful. You have a way of making even the ordinary moments feel extraordinary, and your presence is truly a gift that I treasure every single day.
+                            </p>
+                            
+                            <p>
+                                I've watched you grow, overcome challenges, and achieve incredible things. Your strength inspires me, your kindness touches everyone around you, and your laughter is absolutely contagious. You've been there for me through my best days and my worst, never judging, always supporting, and constantly believing in me even when I didn't believe in myself. That's what makes you not just a friend, but family.
+                            </p>
+                            
+                            <p>
+                                As you step into this new year of your life, I hope it brings you everything your heart desires and more. May you continue to chase your dreams fearlessly, embrace new adventures with open arms, and always remember how deeply you are loved. You deserve all the happiness, success, and beautiful moments that life has to offer.
+                            </p>
+                            
+                            <p>
+                                Thank you for being YOU – authentic, beautiful, and absolutely irreplaceable. Thank you for the late-night conversations, the spontaneous adventures, the shared secrets, and the countless memories that I will cherish forever. Here's to many more years of friendship, laughter, and making the world brighter just by being in it.
+                            </p>
+                            
+                            <p class="text-2xl font-semibold text-purple-600 mt-8">
+                                Happy Birthday, beautiful soul! 🎂🎊🎈
+                            </p>
+                            
+                            <p class="text-3xl fancy-font text-pink-600 mt-6 text-center">
+                                I love you! 💖✨
+                            </p>
+                            
+                            <div class="text-center mt-8 text-6xl">
+                                🎉🎊🥳🎈🎁💝✨🌟
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 text-center">
+                        <button 
+                            onclick="restartJourney()" 
+                            class="px-8 py-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 text-white text-lg font-semibold rounded-full hover:scale-110 transition-all transform shadow-lg"
+                        >
+                            🔄 Relive the Memories
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <script>
+        // Password: 12311999
+        const CORRECT_PASSWORD = '12311999';
+        
+        function showPasswordModal() {
+            document.getElementById('password-modal').classList.remove('hidden');
+            document.getElementById('password-input').focus();
+        }
+        
+        function hidePasswordModal() {
+            document.getElementById('password-modal').classList.add('hidden');
+            document.getElementById('password-input').value = '';
+            document.getElementById('error-message').classList.add('hidden');
+        }
+        
+        function checkPassword() {
+            const input = document.getElementById('password-input');
+            const errorMsg = document.getElementById('error-message');
+            const password = input.value.trim();
+            
+            if (password === CORRECT_PASSWORD) {
+                // Correct password - open envelope and show content
+                unlockCard();
+            } else {
+                // Wrong password - show error
+                errorMsg.classList.remove('hidden');
+                input.classList.add('error-shake');
+                input.value = '';
+                
+                setTimeout(() => {
+                    input.classList.remove('error-shake');
+                }, 500);
+            }
+        }
+        
+        function unlockCard() {
+            const envelope = document.getElementById('envelope');
+            const envelopeScreen = document.getElementById('envelope-screen');
+            const mainContent = document.getElementById('main-content');
+            
+            // Animate envelope opening
+            envelope.classList.add('opening');
+            
+            setTimeout(() => {
+                // Hide password modal
+                hidePasswordModal();
+                
+                // Fade out envelope screen
+                envelopeScreen.style.transition = 'opacity 0.8s';
+                envelopeScreen.style.opacity = '0';
+                
+                setTimeout(() => {
+                    envelopeScreen.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                    document.getElementById('page-1').classList.remove('hidden');
+                    document.getElementById('page-1').classList.add('fade-in');
+                }, 800);
+            }, 600);
+        }
+        
+        function goToPage(pageNumber) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            // Show target page with animation
+            const targetPage = document.getElementById(`page-${pageNumber}`);
+            targetPage.classList.remove('hidden');
+            targetPage.classList.add('slide-enter');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Remove animation class after it completes
+            setTimeout(() => {
+                targetPage.classList.remove('slide-enter');
+            }, 600);
+        }
+        
+        function restartJourney() {
+            goToPage(1);
+        }
+    </script>
+</body>
+</html>
